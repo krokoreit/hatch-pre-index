@@ -7,19 +7,17 @@ name = "hatch-pre-index"
 authors = [
   { name="krokoreit", email="krokoreit@gmail.com" },
 ]
-description = "A Python package for ..."
+description = "A publisher for hatch to check the project version and to run scripts before it invokes the index publisher."
 keywords = [
-    "key1",
+    "Python", "hatch", "publish", "before index"
 ]
-# dependencies = [
-#   "foo", ….
-# ]
 dynamic = ["version"]
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
+    "Framework :: Hatch",
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
@@ -35,26 +33,4 @@ source = "vcs"
 version_scheme = "only-version"
 local_scheme = "no-local-version"
 
-[tool.hatch.envs.default.scripts]
-dev01 = "py ./dev/dev01.py"
-dev02 = "py ./dev/dev02.py"
-dev03 = "py ./dev/dev03.py"
-xmpl01 = "py ./examples/example01.py"
-xmpl02 = "py ./examples/example02.py"
-xmpl03 = "py ./examples/example03.py"
 
-[tool.coverage.run]
-source_pkgs = ["hatch_pre_index", "tests"]
-branch = true
-parallel = true
-
-[tool.coverage.paths]
-hatch_pre_index = ["hatch-pre-index/hatch_pre_index", "*/hatch-pre-index/src/hatch_pre_index"]
-tests = ["tests", "*/hatch-pre-index/tests"]
-
-[tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]

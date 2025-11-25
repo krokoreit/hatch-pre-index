@@ -4,7 +4,11 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/hatch-pre-index.svg)](https://pypi.org/project/hatch-pre-index)
 
 
-This package provides a Python module ...
+This package provides the PreIndexPublisher for hatch.
+
+It purpose is to check the project version and to run scripts before it invokes the index publisher.
+
+Use with 'hatch publish -p pre_index' 
 
 
 Enjoy
@@ -25,9 +29,8 @@ pip install hatch-pre-index
 ### hatch_pre_index Class
 Import module:
 ```py
-  from hatch-pre-index import hatch_pre_index
-
-  obj = hatch_pre_index(aaaa)
+  hatch publish -p pre_index
+)
 ```
 
 
@@ -42,10 +45,8 @@ Import module:
 
 #### aaa() Method
 ```py
-  get_zoneinfo_utc()
+  sss
 ```
-
-
 
 <div style="text-align: right"><a href="#methods">&#8679; back up to list of methods</a></div>
 

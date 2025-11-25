@@ -28,11 +28,27 @@
 #
 # ================================================================================
 
+from hatch.publish.index import IndexPublisher
+from .utils import read_published_version, write_published_version, get_git_tag, get_hatch_version
 
 
-class hatch_pre_index:
-    def __init__(self):
-        pass
+class PreIndexPublisher(IndexPublisher):
+    # use config in [tool.hatch.publish.pre_index]
+    PLUGIN_NAME = "pre_index"
 
-    def for_test_only(self, in_text):
-        return in_text
+    def publish(self, artifacts, options):
+        # Determine what we are publishing
+        git_tag = get_git_tag()
+        hatch_version = get_hatch_version()
+        published = read_published_version()
+        print(f"[PreIndexPublisher] git tag         = {git_tag}")
+        print(f"[PreIndexPublisher] hatch version   = {hatch_version}")
+        print(f"[PreIndexPublisher] published       = {published}")
+
+        if git_tag:
+            print(f"[PreIndexPublisher] Writing published version: {git_tag} and {hatch_version}")
+            write_published_version(git_tag)
+
+        # Continue with standard index publishing
+        print("We have disabled index publisher at the moment.")
+        #return super().publish(artifacts, options)
