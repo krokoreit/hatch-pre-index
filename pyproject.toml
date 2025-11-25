@@ -33,4 +33,8 @@ source = "vcs"
 version_scheme = "only-version"
 local_scheme = "no-local-version"
 
+[project.entry-points.hatch]
+# key = "package_dir.hooks" 
+# with key being project name without leading 'hatch-' ??
+pre-index = "hatch_pre_index.hooks"
 
