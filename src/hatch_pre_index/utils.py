@@ -49,7 +49,9 @@ def run_command(*args):
 def get_hatch_version():
     """Return the version from hatch version."""
     output = get_command_output("hatch", "version")
-    return output.strip()
+    if isinstance(output, str):
+        return output.strip()
+    return None
 
 
 # ------------------------------------------------------------
@@ -59,7 +61,9 @@ def get_hatch_version():
 def get_git_tag():
     """Return the latest git tag (e.g. `v1.2.3`) or None."""
     output = get_command_output("git", "describe", "--tags", "--abbrev=0")
-    return output.strip()
+    if isinstance(output, str):
+        return output.strip()
+    return None
 
 
 
