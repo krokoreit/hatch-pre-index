@@ -6,7 +6,7 @@
 
 This package provides the PreIndexPublisher for hatch.
 
-It purpose is to check the project version and to run scripts before it invokes the index publisher.
+Its purpose is to check the project version and to run scripts before it invokes the index publisher.
 
 Use with 'hatch publish -p pre_index' 
 

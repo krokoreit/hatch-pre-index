@@ -46,7 +46,7 @@ class PreIndexPublisher(IndexPublisher):
         print(f"[PreIndexPublisher] published       = {published}")
 
         if git_tag:
-            print(f"[PreIndexPublisher] Writing published version: {git_tag} and {hatch_version}")
+            print(f"[PreIndexPublisher] Writing published version: {git_tag}")
             write_published_version(git_tag)
 
         # Continue with standard index publishing
