@@ -51,20 +51,6 @@ def get_hatch_version():
     output = get_command_output("hatch", "version")
     return output.strip()
 
-    try:
-        result = subprocess.run(
-            ["hatch", "version"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True,
-        )
-        output = result.stdout or result.stderr
-        return output.strip()
-    except subprocess.CalledProcessError:
-        return None
-
-
 
 # ------------------------------------------------------------
 # Git helpers
@@ -72,20 +58,9 @@ def get_hatch_version():
 
 def get_git_tag():
     """Return the latest git tag (e.g. `v1.2.3`) or None."""
-    output = get_command_output("hatch", "version")
+    output = get_command_output("git", "describe", "--tags", "--abbrev=0")
     return output.strip()
 
-    try:
-        result = subprocess.run(
-            ["git", "describe", "--tags", "--abbrev=0"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True,
-        )
-        return result.stdout.strip()
-    except subprocess.CalledProcessError:
-        return None
 
 
 # ------------------------------------------------------------
