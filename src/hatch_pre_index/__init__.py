@@ -3,4 +3,4 @@ __all__ = [
     "PreIndexPublisher"
 ]
 
-from .hatch_pre_index import PreIndexPublisher
+from .pre_index_publisher import PreIndexPublisher
