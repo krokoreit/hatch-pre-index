@@ -1,8 +1,8 @@
 # ================================================================================
 #
-#   hatch_pre_index class
+#   PreIndexPublisher class
 #
-#   object for .....
+#   object for checking the project version and to run scripts before it invokes the index publisher.
 #
 #   MIT License
 #
@@ -28,6 +28,10 @@
 #
 # ================================================================================
 
+import os
+import keyring
+import click
+
 from hatch.publish.index import IndexPublisher
 from .utils import read_published_version, write_published_version, get_git_tag, get_hatch_version
 
@@ -37,7 +41,21 @@ class PreIndexPublisher(IndexPublisher):
     PLUGIN_NAME = "pre_index"
 
     def publish(self, artifacts, options):
-        # Determine what we are publishing
+
+        print("root", self.root)
+        print("cache_dir", self.cache_dir)
+        print("project_config", self.project_config)
+        print("plugin_config", self.plugin_config)
+
+        project_tag = "unknown"
+        if os.path.isdir(self.root):
+            f_head, f_tail = os.path.split(self.root)
+            if len(f_tail) > 0:
+                project_tag = f_tail
+
+
+    
+        # Determine what version we are publishing
         git_tag = get_git_tag()
         hatch_version = get_hatch_version()
         published = read_published_version()
@@ -45,10 +63,50 @@ class PreIndexPublisher(IndexPublisher):
         print(f"[PreIndexPublisher] hatch version   = {hatch_version}")
         print(f"[PreIndexPublisher] published       = {published}")
 
+        # Only publish when git tag != last published
+        if git_tag and published and git_tag == published:
+            print("[PreIndexPublisher] Version", git_tag, "already published. Run 'hatch build' to build a new version.")
+            exit(1)
+        
         if git_tag:
-            print(f"[PreIndexPublisher] Writing published version: {git_tag}")
+            print("[PreIndexPublisher] Writing published version:", git_tag)
             write_published_version(git_tag)
+            
+        # handle stored credentials
+        prompt_for_project_token = False
+        is_global_token = False
+        service_name = "pre_index_publisher_" + project_tag
+        password = keyring.get_password(service_name, "__token__")
+        if password is not None:
+            prompt_for_project_token = (password == "__public__")
+        else:
+            print("No API token is currently stored. You can provide an API token with global or project scope.")
+            if click.confirm("Do you want to enter a token with global scope?"):
+                password = click.prompt("Enter global scope API token for " + project_tag, default="")
+                is_global_token = (len(password) > 0)
+            else:
+                prompt_for_project_token = True
+        if prompt_for_project_token:
+            password = click.prompt("Enter project scope API token for " + project_tag, default="")
+
+
+
+        print("password", password)
+
 
         # Continue with standard index publishing
-        print("We have disabled index publisher at the moment.")
-        #return super().publish(artifacts, options)
+        index_options = {'no_prompt': options['no_prompt'], 'initialize_auth': options['initialize_auth']}
+        if len(password) > 0:
+            index_options['user'] = "__token__"
+            index_options['auth'] = password
+
+# temp test
+        index_options['repo'] = "test"
+
+        super().publish(artifacts, index_options)
+
+        # on succesful completion, store credentials
+        if is_global_token:
+            keyring.set_password(service_name, "__token__", "__public__")
+        elif prompt_for_project_token and len(password) > 0:
+            keyring.set_password(service_name, "__token__", password)
