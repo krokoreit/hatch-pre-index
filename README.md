@@ -11,6 +11,20 @@ Its purpose is to check the project version and to run scripts before it invokes
 Use with 'hatch publish -p pre_index' 
 
 
+Use with options:
+* repo  
+In order to specify a repo (other than 'main'), use either
+  * the -o flag in 'hatch publish -p pre_index -o repo=test'
+  * an entry in the pyproject.toml file  
+  [tool.hatch.publish.pre_index]  
+  repo="test"
+
+
+
+
+
+</br>
+
 Enjoy
 
 &emsp;krokoreit  

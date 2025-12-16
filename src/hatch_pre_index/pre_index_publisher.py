@@ -54,7 +54,18 @@ class PreIndexPublisher(IndexPublisher):
                 project_tag = f_tail
 
 
-    
+        #print("[PreIndexPublisher] options:", options)
+        
+        repo = ""
+        if 'repo' in options:
+            repo = options['repo']
+        elif 'repo' in self.project_config:
+            repo = self.project_config['repo']
+
+        print("[PreIndexPublisher] repo:", repo)
+
+
+
         # Determine what version we are publishing
         git_tag = get_git_tag()
         hatch_version = get_hatch_version()
@@ -67,46 +78,55 @@ class PreIndexPublisher(IndexPublisher):
         if git_tag and published and git_tag == published:
             print("[PreIndexPublisher] Version", git_tag, "already published. Run 'hatch build' to build a new version.")
             exit(1)
-        
-        if git_tag:
-            print("[PreIndexPublisher] Writing published version:", git_tag)
-            write_published_version(git_tag)
+
+
             
         # handle stored credentials
-        prompt_for_project_token = False
-        is_global_token = False
-        service_name = "pre_index_publisher_" + project_tag
-        password = keyring.get_password(service_name, "__token__")
-        if password is not None:
-            prompt_for_project_token = (password == "__public__")
+        if len(repo) > 0:
+            service_name_repo = repo
         else:
-            print("No API token is currently stored. You can provide an API token with global or project scope.")
-            if click.confirm("Do you want to enter a token with global scope?"):
-                password = click.prompt("Enter global scope API token for " + project_tag, default="")
-                is_global_token = (len(password) > 0)
+            service_name_repo = 'main'
+        service_name = "pre_index_publisher_" + project_tag + "_" + service_name_repo
+        password = keyring.get_password(service_name, "__token__")
+
+        if password is None:
+            print("No API token is currently stored for " + project_tag + "_" + service_name_repo + ".")
+            print("You can provide an API token to be stored and reused or just use it for this time.")
+            store_token = click.confirm("Do you want to store an API token?", default="y")
+            if store_token:
+                token_prompt = "Enter API token to store"
             else:
-                prompt_for_project_token = True
-        if prompt_for_project_token:
-            password = click.prompt("Enter project scope API token for " + project_tag, default="")
+                token_prompt = "Enter one time use API token"
+            password = click.prompt(token_prompt, default="")
+
+        if len(password) == 0:
+            print("[PreIndexPublisher] No API token entered. Publishing aborted.")
+            exit(1)
 
 
 
-        print("password", password)
+        #print("password", password)
 
 
         # Continue with standard index publishing
         index_options = {'no_prompt': options['no_prompt'], 'initialize_auth': options['initialize_auth']}
-        if len(password) > 0:
-            index_options['user'] = "__token__"
-            index_options['auth'] = password
+        index_options['user'] = "__token__"
+        index_options['auth'] = password
+        if len(repo) > 0:
+            index_options['repo'] = repo
+
 
 # temp test
         index_options['repo'] = "test"
 
         super().publish(artifacts, index_options)
 
+
+        # on succesful completion, store published version
+        if git_tag:
+            print("[PreIndexPublisher] Writing published version:", git_tag)
+            write_published_version(git_tag)
+
         # on succesful completion, store credentials
-        if is_global_token:
-            keyring.set_password(service_name, "__token__", "__public__")
-        elif prompt_for_project_token and len(password) > 0:
+        if store_token:
             keyring.set_password(service_name, "__token__", password)
