@@ -11,16 +11,6 @@ Its purpose is to check the project version and to run scripts before it invokes
 Use with 'hatch publish -p pre_index' 
 
 
-Use with options:
-* repo  
-In order to specify a repo (other than 'main'), use either
-  * the -o flag in 'hatch publish -p pre_index -o repo=test'
-  * an entry in the pyproject.toml file  
-  [tool.hatch.publish.pre_index]  
-  repo="test"
-
-
-
 
 
 </br>
@@ -40,15 +30,38 @@ pip install hatch-pre-index
 
 ## Usage & API
 
-### hatch_pre_index Class
-Import module:
+### Using the pre_index publisher
+Call hatch publish with -p option:
 ```py
   hatch publish -p pre_index
-)
 ```
 
+</br>
+
+### Use with options
+To use the options of the pre_index publisher, you can
+  * use one or more -o flags with hatch publish  
+  'hatch publish -p pre_index -o key1=value1 -o key2=value2'
+  * use an entry in the pyproject.toml file, with string "values" inside quotes  
+  [tool.hatch.publish.pre_index]  
+  key1="value1"  
+  key2=value2  
 
 </br>
+
+#### The pw option  
+The pre_index publisher will ask whether you like to store an API token and then reuse it for the given context of 'project name' and 'repository', e.g. 'myproject' and 'main'. However, if you need to provide a new API token, you can apply the pw=new option to get prompted for entering a new API token. 
+
+</br>
+
+
+#### The repo option  
+Provide the repo option to specify a repository (other than 'main') to which the project will be published.  
+The repo option will be passed on to the index publisher (see https://hatch.pypa.io/dev/plugins/publisher/package-index/).  
+It may be useful to publish to the PyPI test repository.
+
+</br>
+
 
 ### API
 
