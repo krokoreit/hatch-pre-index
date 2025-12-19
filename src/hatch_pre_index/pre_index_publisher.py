@@ -64,6 +64,11 @@ class PreIndexPublisher(IndexPublisher):
 
         print("[PreIndexPublisher] repo:", repo)
 
+        new_pw = False
+        if 'pw' in options:
+            new_pw = options['pw'] == 'new'
+        elif 'pw' in self.project_config:
+            new_pw = self.project_config['pw'] == 'new'
 
 
         # Determine what version we are publishing
@@ -81,16 +86,27 @@ class PreIndexPublisher(IndexPublisher):
 
 
             
-        # handle stored credentials
         if len(repo) > 0:
             service_name_repo = repo
         else:
             service_name_repo = 'main'
-        service_name = "pre_index_publisher_" + project_tag + "_" + service_name_repo
-        password = keyring.get_password(service_name, "__token__")
+        service_name = project_tag + "_" + service_name_repo
+
+        if new_pw:
+            # handle new credentials after trying to delete old one
+            try:
+                keyring.delete_password("pre_index_publisher_" + service_name, "__token__")
+            except:
+                pass
+            password = None
+            token_prompt = "Enter a new API token for " + service_name + "."
+        else:
+            # handle stored credentials
+            password = keyring.get_password("pre_index_publisher_" + service_name, "__token__")
+            token_prompt = "No API token is currently stored for " + service_name + "."
 
         if password is None:
-            print("No API token is currently stored for " + project_tag + "_" + service_name_repo + ".")
+            print(token_prompt)
             print("You can provide an API token to be stored and reused or just use it for this time.")
             store_token = click.confirm("Do you want to store an API token?", default="y")
             if store_token:
@@ -129,4 +145,5 @@ class PreIndexPublisher(IndexPublisher):
 
         # on succesful completion, store credentials
         if store_token:
-            keyring.set_password(service_name, "__token__", password)
+            keyring.set_password("pre_index_publisher_" + service_name, "__token__", password)
+            
