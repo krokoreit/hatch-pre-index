@@ -105,6 +105,7 @@ class PreIndexPublisher(IndexPublisher):
             password = keyring.get_password("pre_index_publisher_" + service_name, "__token__")
             token_prompt = "No API token is currently stored for " + service_name + "."
 
+        store_token = False
         if password is None:
             print(token_prompt)
             print("You can provide an API token to be stored and reused or just use it for this time.")
