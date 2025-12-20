@@ -6,7 +6,7 @@
 
 This package provides the PreIndexPublisher for hatch.
 
-Its purpose is to check the project version and to run scripts before it invokes the index publisher.
+Its purpose is to check the project version [ToDo: and to run scripts] before it invokes the index publisher.
 
 Use with 'hatch publish -p pre_index' 
 
@@ -40,12 +40,16 @@ Call hatch publish with -p option:
 
 ### Use with options
 To use the options of the pre_index publisher, you can
-  * use one or more -o flags with hatch publish  
-  'hatch publish -p pre_index -o key1=value1 -o key2=value2'
-  * use an entry in the pyproject.toml file, with string "values" inside quotes  
-  [tool.hatch.publish.pre_index]  
-  key1="value1"  
-  key2=value2  
+  * either use one or more -o flags with hatch publish  
+    ```py
+    'hatch publish -p pre_index -o key1=value1 -o key2=value2'
+    ```
+  * or use an entry in the pyproject.toml file, with string "values" inside quotes  
+    ```py
+    [tool.hatch.publish.pre_index]  
+    key1="value1"  
+    key2=value2  
+    ```
 
 </br>
 
