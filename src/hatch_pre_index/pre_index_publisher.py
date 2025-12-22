@@ -121,20 +121,12 @@ class PreIndexPublisher(IndexPublisher):
             exit(1)
 
 
-
-        #print("password", password)
-
-
         # Continue with standard index publishing
         index_options = {'no_prompt': options['no_prompt'], 'initialize_auth': options['initialize_auth']}
         index_options['user'] = "__token__"
         index_options['auth'] = password
         if len(repo) > 0:
             index_options['repo'] = repo
-
-
-# temp test
-        index_options['repo'] = "test"
 
         super().publish(artifacts, index_options)
 
