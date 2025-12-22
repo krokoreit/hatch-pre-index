@@ -6,9 +6,15 @@
 
 This package provides the PreIndexPublisher for hatch.
 
-Its purpose is to check the project version [ToDo: and to run scripts] before it invokes the index publisher.
+Its purpose is to perform the following tasks before calling the index publisher (hatch default publisher):
+* Ask for an API token to use for publishing to PyPI.  
+It provides the option to store the API token to be reused each time the project is published to the PyPI repository.
+* Track the project version published.  
+It checks whether the current version has not been published or otherwise reminds you to run hatch build with a new version number.
+* [ToDo: Run scripts]
 
-Use with 'hatch publish -p pre_index' 
+
+Use with 'hatch publish -p pre_index' with options in the command line or the pyproject.toml file ([see below for details()](#use-with-options)).
 
 
 
@@ -28,15 +34,16 @@ pip install hatch-pre-index
 ```
 
 
-## Usage & API
+## Usage
 
 ### Using the pre_index publisher
-Call hatch publish with -p option:
+Call hatch publish with the -p option:
 ```py
   hatch publish -p pre_index
 ```
 
 </br>
+
 
 ### Use with options
 To use the options of the pre_index publisher, you can
@@ -67,22 +74,6 @@ It may be useful to publish to the PyPI test repository.
 </br>
 
 
-### API
-
-#### Methods
-* [aaa()](#aaa-method)  
-* [bbb()](#bbb-method)  
-
-
-#### aaa() Method
-```py
-  sss
-```
-
-<div style="text-align: right"><a href="#methods">&#8679; back up to list of methods</a></div>
-
-
-</br>
 
 ## License
 MIT license  
