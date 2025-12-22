@@ -36,16 +36,25 @@ from hatch.publish.index import IndexPublisher
 from .utils import read_published_version, write_published_version, get_git_tag, get_hatch_version
 
 
+PRINT_DEBUG_ALLOWED = False
+PRINT_DEBUG_TAG = "[PreIndexPublisher]"
+
+def print_debug(*args, **kwargs):
+    """Prints messages if PRINT_DEBUG_ALLOWED is True."""
+    if PRINT_DEBUG_ALLOWED:
+        print(PRINT_DEBUG_TAG + ": " + " ".join(map(str,args)), **kwargs)
+
+
 class PreIndexPublisher(IndexPublisher):
     # use config in [tool.hatch.publish.pre_index]
     PLUGIN_NAME = "pre_index"
 
     def publish(self, artifacts, options):
 
-        print("root", self.root)
-        print("cache_dir", self.cache_dir)
-        print("project_config", self.project_config)
-        print("plugin_config", self.plugin_config)
+        print_debug("root =", self.root)
+        print_debug("cache_dir =", self.cache_dir)
+        print_debug("project_config =", self.project_config)
+        print_debug("plugin_config =", self.plugin_config)
 
         project_tag = "unknown"
         if os.path.isdir(self.root):
@@ -54,7 +63,6 @@ class PreIndexPublisher(IndexPublisher):
                 project_tag = f_tail
 
 
-        #print("[PreIndexPublisher] options:", options)
         
         repo = ""
         if 'repo' in options:
@@ -62,7 +70,7 @@ class PreIndexPublisher(IndexPublisher):
         elif 'repo' in self.project_config:
             repo = self.project_config['repo']
 
-        print("[PreIndexPublisher] repo:", repo)
+        print_debug("repo =", repo)
 
         new_pw = False
         if 'pw' in options:
@@ -73,19 +81,20 @@ class PreIndexPublisher(IndexPublisher):
 
         # Determine what version we are publishing
         git_tag = get_git_tag()
-        hatch_version = get_hatch_version()
+        print_debug(f"git tag         = {git_tag}")
+
+        # ToDo: may want to use hatch version later
+        #hatch_version = get_hatch_version()
+        #print_debug(f"hatch version   = {hatch_version}")
+        
         published = read_published_version()
-        print(f"[PreIndexPublisher] git tag         = {git_tag}")
-        print(f"[PreIndexPublisher] hatch version   = {hatch_version}")
-        print(f"[PreIndexPublisher] published       = {published}")
+        print_debug(f"published       = {published}")
 
         # Only publish when git tag != last published
         if git_tag and published and git_tag == published:
             print("[PreIndexPublisher] Version", git_tag, "already published. Run 'hatch build' to build a new version.")
             exit(1)
 
-
-            
         if len(repo) > 0:
             service_name_repo = repo
         else:
@@ -139,4 +148,5 @@ class PreIndexPublisher(IndexPublisher):
         # on succesful completion, store credentials
         if store_token:
             keyring.set_password("pre_index_publisher_" + service_name, "__token__", password)
-            
+
+
