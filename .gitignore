@@ -1,6 +1,9 @@
 # development files & folder
 dev/
 
+# PyPI information
+pypi/
+
 # script files & folder
 scripts/
 
@@ -26,6 +29,7 @@ temp/
 build/
 develop-eggs/
 dist/
+dist-old/
 downloads/
 eggs/
 .eggs/
