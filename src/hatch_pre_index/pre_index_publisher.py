@@ -2,8 +2,8 @@
 #
 #   PreIndexPublisher class
 #
-#   object for handling PyPI API tokens and tracking the project version 
-#   before it invokes the index publisher.
+#   A hatch publisher plugin for handling PyPI API tokens and tracking the 
+#   project version before it invokes the index publisher.
 #
 #   MIT License
 #
