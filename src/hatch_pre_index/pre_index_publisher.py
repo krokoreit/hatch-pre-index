@@ -34,7 +34,7 @@ import keyring
 import click
 
 from hatch.publish.index import IndexPublisher
-from .utils import read_published_version, write_published_version, get_git_tag, get_hatch_version
+from .utils import get_command_output, run_command, read_published_version, write_published_version, get_git_tag, get_hatch_version
 
 
 PRINT_DEBUG_ALLOWED = False
@@ -140,14 +140,27 @@ class PreIndexPublisher(IndexPublisher):
 
         super().publish(artifacts, index_options)
 
+        # on succesful completion, store credentials
+        if store_token:
+            keyring.set_password("pre_index_publisher_" + service_name, "__token__", password)
+
 
         # on succesful completion, store published version
         if git_tag:
             print("[PreIndexPublisher] Writing published version:", git_tag)
             write_published_version(git_tag)
+            # commit the changed version file
+            print("[PreIndexPublisher] Committing the updated version file.")
+            cmsg = "updated to " + git_tag
+            run_command("git", "commit", "-a", "-m", cmsg)
+            # may need to push to remotes
+            output = get_command_output("git", "remote")
+            remotes = [line.strip() for line in output.splitlines() if line.strip()]
+            for remote in remotes:
+                push_confirmed = click.confirm(f"Do you want to push the updated version file to remote '{remote}'?", default=True)
+                if push_confirmed:
+                    run_command("git", "push", remote)
 
-        # on succesful completion, store credentials
-        if store_token:
-            keyring.set_password("pre_index_publisher_" + service_name, "__token__", password)
+
 
 
